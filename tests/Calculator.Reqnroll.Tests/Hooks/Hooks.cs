@@ -12,7 +12,8 @@ public sealed class Hooks
         var playwright = await Playwright.CreateAsync();
         var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
-            Headless = !IsHeaded()
+            Headless = !IsHeaded(),
+            SlowMo = GetSlowMoMs()
         });
 
         var context = await browser.NewContextAsync(new BrowserNewContextOptions
@@ -57,5 +58,21 @@ public sealed class Hooks
         var headedValue = Environment.GetEnvironmentVariable("E2E_HEADED");
         return string.Equals(headedValue, "1", StringComparison.OrdinalIgnoreCase)
             || string.Equals(headedValue, "true", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static float? GetSlowMoMs()
+    {
+        var value = Environment.GetEnvironmentVariable("E2E_SLOWMO_MS");
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        if (float.TryParse(value, out var parsed) && parsed > 0)
+        {
+            return parsed;
+        }
+
+        return null;
     }
 }

@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "node ./src/run-tests.js",
     "test:e2e": "dotnet test tests/Calculator.Reqnroll.Tests/Calculator.Reqnroll.Tests.csproj",
-    "test:e2e:headed": "cross-env E2E_HEADED=true dotnet test tests/Calculator.Reqnroll.Tests/Calculator.Reqnroll.Tests.csproj"
+    "test:e2e:headed": "cross-env E2E_HEADED=true dotnet test tests/Calculator.Reqnroll.Tests/Calculator.Reqnroll.Tests.csproj",
+    "test:e2e:headed:slow": "cross-env E2E_HEADED=true E2E_SLOWMO_MS=300 dotnet test tests/Calculator.Reqnroll.Tests/Calculator.Reqnroll.Tests.csproj"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",

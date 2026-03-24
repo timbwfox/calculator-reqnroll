@@ -60,6 +60,12 @@ Run E2E tests in headed mode:
 npm run test:e2e:headed
 ```
 
+Run E2E tests in headed mode with slower UI actions (300ms delay per Playwright action):
+
+```bash
+npm run test:e2e:headed:slow
+```
+
 ## E2E Setup (first time)
 
 Build the .NET test project and install Playwright browser dependencies:
