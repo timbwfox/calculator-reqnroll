@@ -30,14 +30,22 @@ jobs:
           node-version: 24
           cache: npm
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
-
       - name: Build app
         run: npm run build
+
+      - name: Build .NET test project
+        run: dotnet build tests/Calculator.Reqnroll.Tests/Calculator.Reqnroll.Tests.csproj
+
+      - name: Install Playwright browser for .NET tests
+        run: pwsh tests/Calculator.Reqnroll.Tests/bin/Debug/net8.0/playwright.ps1 install --with-deps chromium
 
       - name: Run unit tests
         shell: bash
@@ -51,7 +59,14 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p artifacts/logs
-          npm run test:e2e 2>&1 | tee artifacts/logs/e2e-tests.log
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/vite.log 2>&1 &
+          for i in {1..60}; do
+            if curl -sSf http://127.0.0.1:4173 >/dev/null; then
+              break
+            fi
+            sleep 2
+          done
+          dotnet test tests/Calculator.Reqnroll.Tests/Calculator.Reqnroll.Tests.csproj --logger "trx;LogFileName=e2e.trx" 2>&1 | tee artifacts/logs/e2e-tests.log
 
       - name: Upload test artifacts
         if: always()
@@ -60,7 +75,6 @@ jobs:
           name: test-artifacts
           path: |
             artifacts
-            playwright-report
             test-results
           if-no-files-found: warn
           overwrite: true
